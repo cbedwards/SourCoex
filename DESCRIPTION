@@ -1,0 +1,22 @@
+Package: SourCoex
+Title: Analyze Landis Et Al. Data of Sourdough Communities With a Range of Community Dynamics Models
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Collin",
+           family = "Edwards",
+           role = c("aut", "cre"),
+           email = "edwards.evoeco@example.com",
+           comment = c(ORCID = "0000-0002-4937-5159"))
+Description: Starting with the data published on Dryad in association with eLife 2021;10:e61644 DOI: 10.7554/eLife.61644, we fit a variety of classic competition models. The goal is to identify effective population and community models.
+License: `use_mit_license()`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+StagedInstall: no 
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
