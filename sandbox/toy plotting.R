@@ -2,6 +2,7 @@
 ##
 
 library(tidyverse)
+library(here)
 specmat=unique(sour.data[,c("spec1","spec2")])
 specmat=specmat[specmat$spec1 != specmat$spec2,]
 gglist=NULL
@@ -29,7 +30,7 @@ library(cowplot)
 library(gridExtra)
 library(sjPlot)
 length(gglist)
-grid.arrange(gglist[[1]],
+gg.fin=grid.arrange(gglist[[1]],
              gglist[[2]],
              gglist[[3]],
              gglist[[4]],
@@ -58,6 +59,10 @@ grid.arrange(gglist[[1]],
              gglist[[27]],
              gglist[[28]],
              nrow=6)
+ggsave(here("sandbox/figs","rel-abund.jpg"),
+       gg.fin,
+       width=20, height=15,
+       units="in")
 
 ##############
 ## Absolute densities
@@ -87,22 +92,23 @@ ggplot(dat.abs, aes(transf, log(abund1), color = rep)) +
 
 specmat=unique(sour.data[,c("spec1","spec2")])
 specmat=specmat[specmat$spec1 != specmat$spec2,]
-gglist=NULL
+gglist=list()
 for(i in 1:nrow(specmat)){
   specid=specmat[i,]
   dat.abs = sour.data %>%
-    filter(abund=="rel", spec1 == specid[[1]], spec2 == specid[[2]])
+    filter(abund=="abs", spec1 == specid[[1]], spec2 == specid[[2]]) %>%
+    mutate(combined=abund1+abund2)
   # View(dat.abs)
 
-  gglist[[i]]=ggplot(dat.abs, aes(transf, abund1, color = rep)) +
+  gglist[[i]]=ggplot(dat.abs, aes(transf, combined, color = rep)) +
     geom_line()+
     ggtitle(paste(spec.map$name.full[spec.map$name.data==specid[[1]]],
-                  " vs \n",
+                  " and \n",
                   spec.map$name.full[spec.map$name.data==specid[[2]]])
     )+
-    ylim(0,1)+
+    # ylim(0,1)+
     xlab("Transfer number (each is 48 hrs)")+
-    ylab("Abund spec 1")+
+    ylab("Total abundance")+
     theme(legend.position="none")
 
   # print(gglist[[i]])
@@ -112,7 +118,7 @@ library(cowplot)
 library(gridExtra)
 library(sjPlot)
 length(gglist)
-grid.arrange(gglist[[1]],
+gg.fin=grid.arrange(gglist[[1]],
              gglist[[2]],
              gglist[[3]],
              gglist[[4]],
@@ -141,3 +147,75 @@ grid.arrange(gglist[[1]],
              gglist[[27]],
              gglist[[28]],
              nrow=6)
+ggsave(here("sandbox/figs","total-abund.jpg"),
+       gg.fin,
+       width=20, height=15,
+       units="in")
+
+
+####
+#### Abs densities, log sum total
+####
+
+
+specmat=unique(sour.data[,c("spec1","spec2")])
+specmat=specmat[specmat$spec1 != specmat$spec2,]
+gglist=list()
+for(i in 1:nrow(specmat)){
+  specid=specmat[i,]
+  dat.abs = sour.data %>%
+    filter(abund=="abs", spec1 == specid[[1]], spec2 == specid[[2]]) %>%
+    mutate(lcombined=log(abund1+abund2))
+  # View(dat.abs)
+
+  gglist[[i]]=ggplot(dat.abs, aes(transf, lcombined, color = rep)) +
+    geom_line()+
+    ggtitle(paste(spec.map$name.full[spec.map$name.data==specid[[1]]],
+                  " and \n",
+                  spec.map$name.full[spec.map$name.data==specid[[2]]])
+    )+
+    # ylim(0,1)+
+    xlab("Transfer number (each is 48 hrs)")+
+    ylab("Log total abundance")+
+    theme(legend.position="none")
+
+  # print(gglist[[i]])
+}
+
+library(cowplot)
+library(gridExtra)
+library(sjPlot)
+length(gglist)
+gg.fin=grid.arrange(gglist[[1]],
+                    gglist[[2]],
+                    gglist[[3]],
+                    gglist[[4]],
+                    gglist[[5]],
+                    gglist[[6]],
+                    gglist[[7]],
+                    gglist[[8]],
+                    gglist[[9]],
+                    gglist[[10]],
+                    gglist[[11]],
+                    gglist[[12]],
+                    gglist[[13]],
+                    gglist[[14]],
+                    gglist[[15]],
+                    gglist[[16]],
+                    gglist[[17]],
+                    gglist[[18]],
+                    gglist[[19]],
+                    gglist[[20]],
+                    gglist[[21]],
+                    gglist[[22]],
+                    gglist[[23]],
+                    gglist[[24]],
+                    gglist[[25]],
+                    gglist[[26]],
+                    gglist[[27]],
+                    gglist[[28]],
+                    nrow=6)
+ggsave(here("sandbox/figs","total-log-abund.jpg"),
+       gg.fin,
+       width=20, height=15,
+       units="in")
