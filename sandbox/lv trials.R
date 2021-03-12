@@ -4,6 +4,10 @@ library(deSolve)
 library(tidyverse)
 library(SourCoex)
 library(here)
+library(cowplot)
+library(gridExtra)
+library(beepr)
+
 
 ode_LV=function(t,y,parms) {
   # This function is based on the Lotka-Volterra competition model
@@ -207,7 +211,7 @@ plotter_landis=function(parms, # fitted parameters
     xlab("time (hrs)")+
     ylab("CFUs")+
     ggtitle(paste0(name.spec1," only"))
-  gg.spec3 = ggplot(data=dat.plot.2) +
+  gg.spec2 = ggplot(data=dat.plot.2) +
     # fitted curve
     geom_path(aes(x=time, y=spec2), col="blue", linetype="dashed")+
     # actual data
@@ -218,8 +222,6 @@ plotter_landis=function(parms, # fitted parameters
     ylab("CFUs")+
     ggtitle(paste0(name.spec2," only"))
 
-  require(cowplot)
-  require(gridExtra)
 
 
   title.gg <- ggplot() +
@@ -420,7 +422,7 @@ obj_ss = function(parms, #parameters for model implemented between transfers (fi
     cur.transf=dat.real[i.compare,1]
     err = (dat.real[i.compare,-1]+1) -
       (out$transf.pred[out$transf.pred[,1]==cur.transf,-1]+1)
-    err=err/10000
+    err=err/10
     SS=SS+sum(err^2)
   }
   return(SS)
@@ -697,6 +699,7 @@ ggsave(here("sandbox/figs",paste0("logistic-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
 
+
 ### Species C
 parms.guess=c(r=.1, k=30000)
 specid="C"
@@ -767,6 +770,7 @@ ggsave(here("sandbox/figs",paste0("logistic-spec-",specid,".jpg")),
 # step 4: use optim to find best parms (LV)
 # #########################################
 
+convergence.lv.ls=list()
 
 ## Note: define boundaries for plausible.
 ## Reminders:
@@ -780,8 +784,8 @@ ggsave(here("sandbox/figs",paste0("logistic-spec-",specid,".jpg")),
 parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
 parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
 ## Hard to guess what is a good starting point
-parms.guess=c(r1=.2,r2=.1,a12=.5,a21=.5,k1=2*10^5, k2=8000)
-
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
 specid=c("1","2")
 dat.prepped=dataprep_landis(specid)
 fit1=optim(par=parms.guess,
@@ -796,6 +800,7 @@ fit1=optim(par=parms.guess,
            upper=parm.upper,
            lower=parm.lower
 )
+fit1
 parm_check(parms.cur=fit1$par,
            parm.lower=parm.lower,
            parm.upper=parm.upper,
@@ -804,15 +809,16 @@ parm_check(parms.cur=fit1$par,
 fit2=optim(par=fit1$par,
            fn=obj_helper,
            ## ad'l args
-           x0.mat=x0.mat,
+           x0.mat=dat.prepped$x0.mat,
            transf.num=6,
            ode_fun=ode_fun,
-           dat.real.ls=dat.real.ls,
+           dat.real.ls=dat.prepped$dat.real.ls,
            ##Methods stuff
            method="L-BFGS-B",
            upper=parm.upper,
            lower=parm.lower
 )
+fit2
 parm_check(parms.cur=fit2$par,
            parm.lower=parm.lower,
            parm.upper=parm.upper,
@@ -829,24 +835,7 @@ plotter_landis(parms=fit2$par,
                specmap.cur = spec.map)
 
 
-fit3=optim(par=fit2$par,
-           fn=obj_helper,
-           ## ad'l args
-           x0.mat=x0.mat,
-           transf.num=6,
-           ode_fun=ode_fun,
-           dat.real.ls=dat.real.ls,
-           ##Methods stuff
-           method="L-BFGS-B",
-           upper=parm.upper,
-           lower=parm.lower
-)
-parm_check(parms.cur=fit3$par,
-           parm.lower=parm.lower,
-           parm.upper=parm.upper,
-           parmnames=parmnames.LV
-)
-plotter_landis(parms=fit3$par,
+mod.fit = plotter_landis(parms=fit2$par,
                ode_fun=ode_fun,
                parmnames = parmnames.LV,
                parmunits=units.LV,
@@ -855,8 +844,726 @@ plotter_landis(parms=fit3$par,
                dat.solo2 = dat.prepped$dat.solo2,
                specid = specid,
                specmap.cur = spec.map)
-# Step 5: report and plot results
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
 
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+########################
+# Species 1 and 3
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("1","3")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+########################
+# Species 1 and 4
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("1","4")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+########################
+# Species 2 and 3
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("2","3")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+########################
+# Species 2 and 4
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("2","4")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+###############################
+# Species 3 and 4
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=1, r2=1, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("3","4")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+###############################
+# Species A and B
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=5, a21=5, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("A","B")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+###############################
+# Species A and C
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=100, a21=100, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("A","C")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+# beep(4)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+
+###############################
+# Species A and D
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=100, a21=100, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("A","D")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+# beep(4)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+###############################
+# Species B and C
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=100, a21=100, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("B","C")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+# beep(4)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+###############################
+# Species B and D
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=100, a21=100, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("B","D")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+# beep(4)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+###############################
+# Species C and D
+#
+parm.lower=c(r1=0.01, r2=0.01, a12 = 0, a21=0, k1 = 10^3, k2=10^3)
+parm.upper=c(r1=5, r2=5, a12=100, a21=100, k1=10^6, k2=10^6)
+## Hard to guess what is a good starting point
+parms.guess=c(r1=.2,r2=.2,a12=.5,a21=.9,k1=2*10^5, k2=6000)
+ode_fun=ode_LV
+specid=c("C","D")
+dat.prepped=dataprep_landis(specid)
+fit1=optim(par=parms.guess,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+fit1
+parm_check(parms.cur=fit1$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+fit2=optim(par=fit1$par,
+           fn=obj_helper,
+           ## ad'l args
+           x0.mat=dat.prepped$x0.mat,
+           transf.num=6,
+           ode_fun=ode_fun,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           ##Methods stuff
+           method="L-BFGS-B",
+           upper=parm.upper,
+           lower=parm.lower
+)
+# beep(4)
+fit2
+parm_check(parms.cur=fit2$par,
+           parm.lower=parm.lower,
+           parm.upper=parm.upper,
+           parmnames=parmnames.LV
+)
+
+mod.fit = plotter_landis(parms=fit2$par,
+                         ode_fun=ode_fun,
+                         parmnames = parmnames.LV,
+                         parmunits=units.LV,
+                         dat.comp=dat.prepped$dat.comp,
+                         dat.solo1 = dat.prepped$dat.solo1,
+                         dat.solo2 = dat.prepped$dat.solo2,
+                         specid = specid,
+                         specmap.cur = spec.map)
+mod.fit
+ggsave(here("sandbox/figs",paste0("LV-specs-",paste0(specid, collapse="-"),".jpg")),
+       mod.fit,
+       width=18, height=13)
+convergence.lv.ls[[length(convergence.lv.ls)+1]] = list(specid = specid,
+                                                        convergence = fit2$convergence,
+                                                        message = fit2$message)
+
+saveRDS(convergence.lv.ls, here("sandbox","lv-convergence-list.RDS"))
+
+# Step 5: report and plot results
 
 
 
