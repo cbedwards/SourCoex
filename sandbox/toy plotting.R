@@ -3,8 +3,32 @@
 
 library(tidyverse)
 library(here)
+
+## First, simple plot of data for species 2 and species 4 (their abs is pretty similar)
+##
+dat.cur=sour.data %>%
+  filter(abund=="abs", spec1 == "2", spec2=="4")
+
+gg=ggplot(dat.cur, aes(x=transf))+
+  geom_point(aes(y=abund1, x=transf+.02), color='indianred', alpha=.5)+
+  geom_point(aes(y=abund2,x=transf-.02), color='cornflowerblue', alpha=.5)+
+  ggtitle(paste(spec.map$name.full[spec.map$name.data=="2"],
+                " vs \n",
+                spec.map$name.full[spec.map$name.data=="4"]))+
+  xlab("transfer number")+
+  ylab("abundance (CFUs)")
+
+ggsave(here("sandbox/figs","example-data-specs2-4.jpg"),
+       gg,
+       width=8, height=5,
+       units="in")
+
+
+
+
 specmat=unique(sour.data[,c("spec1","spec2")])
 specmat=specmat[specmat$spec1 != specmat$spec2,]
+
 gglist=NULL
 for(i in 1:nrow(specmat)){
   specid=specmat[i,]
