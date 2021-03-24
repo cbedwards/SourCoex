@@ -40,6 +40,10 @@ obj_ss = function(parms, #parameters for model implemented between transfers (fi
                  aug.ls = aug.ls,
                  reso=reso,
                  return.all=return.all)
+  ## account for Tilman: if modeling tilman r* model, remove resource column from comparison(!!)
+  if(!is.null(aug.ls$Til)){
+   out$transf.pred=out$transf.pred[,-ncol(out$transf.pred)]
+  }
   SS=0
   for(i.compare in 1:nrow(dat.real)){
     cur.transf=dat.real[i.compare,1]

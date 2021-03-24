@@ -40,6 +40,9 @@ obj_helper=function(parms, #parameters for model implemented between transfers (
   ss.tot=0
   for(i.rep in 1:nrow(x0.mat)){
     x0=x0.mat[i.rep,]
+    if(!is.null(aug.ls$Til)){
+     x0=c(x0,parms[length(parms)])
+    }
     dat.real=dat.real.ls[[i.rep]]
     if(sum(is.na(dat.real)) != 0){stop(paste0("NA in `dat.real.ls` entry number ", i.rep,". Check to make sure nothing weird is happing, remove transfer numbers with NAs."))}
     ss.cur=obj_ss(parms=parms,

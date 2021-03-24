@@ -23,19 +23,24 @@ plotter_landis.solo=function(parms, # fitted parameters
                              parmunits, #units of ode function parms (e.g. units.LV
                              dat,
                              specid, # vector of species names, for mapping
+                             aug.ls=list(), # for tilman etc
                              specmap.cur=spec.map, # map of species id to species name
                              reso=10 #plot points per hour.
 ){
   specname=spec.map[spec.map$name.data==specid,2][[1]]
-
+  x0=10/1000
+  if(!is.null(aug.ls$Til)){ #doing tilman model
+    x0=c(x0,parms[length(parms)])
+  }
   fit.pred=exper_pred(parms=parms,
-                      x0=c(10),
+                      x0=x0,
                       ode_fun = ode_fun,
                       transf.num=6,
                       return.all=T,
-                      reso=reso)
+                      reso=reso,
+                      aug.ls=aug.ls)
   dat.plot=as.data.frame(fit.pred$series.tot)
-  names(dat.plot)=c("time","abund")
+  names(dat.plot)=c("time","abund","R")
 
   dat.mean = dat %>%
     group_by(transf) %>%
@@ -57,7 +62,7 @@ plotter_landis.solo=function(parms, # fitted parameters
   require(gridExtra)
   title.gg <- ggplot() +
     labs(title = paste0(specname,
-                        ", logistic model"),
+                        ""),
          subtitle = "Based on Landis et al. 2021")+
     theme_void()+
     theme(plot.title=element_text(size=22))

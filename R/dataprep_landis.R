@@ -21,6 +21,8 @@ dataprep_landis = function(specid,
   dat.comp = data.use %>%
     filter(abund=="abs", spec1 == specid[1], spec2 == specid[2],transf>0)
   dat.comp=(dat.comp[,c("rep","transf", "abund1", "abund2")])
+  dat.comp$abund1=dat.comp$abund1/1000
+  dat.comp$abund2=dat.comp$abund2/1000
   temp=split(dat.comp, f = dat.comp[,"rep"])
   dat.comp.ls=lapply(temp,
                      function(x)(return(na.omit(as.matrix(x[,-1]))))
@@ -30,6 +32,8 @@ dataprep_landis = function(specid,
   dat.solo1 = data.use %>%
     filter(abund=="abs", spec1 == specid[1], spec2 == specid[1],transf>0)
   dat.solo1=(dat.solo1[,c("rep","transf", "abund1", "abund2")])
+  dat.solo1$abund1=dat.solo1$abund1/1000
+  dat.solo1$abund2=dat.solo1$abund2/1000
   temp=split(dat.solo1, f = dat.solo1[,"rep"])
   dat.solo1.ls=lapply(temp,
                       function(x)(return(na.omit(as.matrix(x[,-1]))))
@@ -42,6 +46,8 @@ dataprep_landis = function(specid,
   ## This experiment wasn't designed for a single pairing, so data was formatted such that abund1 is
   ## ## the abundance of the first species *in that competition*. So solos are ALWAYS in the abund1 slot.
   dat.solo2=(dat.solo2[,c("rep","transf", "abund2", "abund1")])
+  dat.solo2$abund1=dat.solo2$abund1/1000
+  dat.solo2$abund2=dat.solo2$abund2/1000
   temp=split(dat.solo2, f = dat.solo2[,"rep"])
   dat.solo2.ls=lapply(temp,
                       function(x)(return(na.omit(as.matrix(x[,-1]))))
@@ -58,6 +64,7 @@ dataprep_landis = function(specid,
   x0.1=matrix(c(0,10),nrow=1) #initial densities
   x0.solo2=x0.1[rep(1,length(dat.solo2.ls)),]
   x0.mat=rbind(x0.comp, x0.solo1, x0.solo2)
+  x0.mat=x0.mat/1000
   return(list(dat.comp=dat.comp,
               dat.solo1=dat.solo1,
               dat.solo2=dat.solo2,

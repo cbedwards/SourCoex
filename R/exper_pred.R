@@ -9,7 +9,7 @@
 #' @param transf.num How many transfers to model (1 is basically no dealing with transfers). With Landis data, this will generally be 6.
 #' @param transf.dur How many hours are each transfer period? Default is 48 (e.g. Landis data).
 #' @param transf.dil At the beginning of each transfer period, what is the fraction of innoculant in the total material. Default is 5/200 (from Landis: 5 microliters innoculant into 195 new flour goo).
-#' @param aug.ls Augmentation list. Not currently used, but a way to pass information down the chain of functions.
+#' @param aug.ls Augmentation list. Currently used to identify modification for Tilman model (see `ode_Til()` and `ode_Til_1spec()`). Argument *$Til* should be a numeric for the number of species, and *$TilR$* is the amount of resouces at the start of each transfer (arbitrary, defaults to 195 for the microliters in Landis 2021).
 #' @param reso How many time points per hour should we return for plotting?
 #' @param return.all Should we return both "highly" resolved trajectories for plotting (resolution based on `reso`) and predictions at each transfer (`TRUE`), or should we just return the predictions at each transfer (`FALSE`). `FALSE` provides everything needed for model-fitting, and should be faster (although how much is unclear).
 #'
@@ -32,6 +32,10 @@ exper_pred = function(parms, #parameters for model implemented between transfers
   transf.pred=NULL
   times=seq(0, transf.dur, by= 1/reso)
   x0.cur = x0
+  if(!is.null(aug.ls$Til)){# carve off final parm for resources
+    TilR = parms[length(parms)]
+    parms=parms[-length(parms)]
+  }
 
   for(i.transf in 1:transf.num){
     out.lsoda=ode(x0.cur,times,ode_fun,parms)
@@ -44,6 +48,12 @@ exper_pred = function(parms, #parameters for model implemented between transfers
     transf.pred=rbind(transf.pred, transf.count)
     ## Okay, implement the transfer
     x0.cur=transf.count*transf.dil
+    ## slightly hacky way of accomodating the tilman model here
+    if(!is.null(aug.ls$Til)){
+        #if we haven't set "resource" units, use 195
+      #aug.ls$Til should be the number of species in the tilman model.
+        x0.cur[aug.ls$Til+1]=TilR #reminder: x0.cur does not include time.
+    }
   }
   transf.pred = cbind(transf=1:transf.num, transf.pred)
   #make object to return

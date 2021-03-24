@@ -24,7 +24,7 @@
 ode_LV=function(t,y,parms) {
   # This function is based on the Lotka-Volterra competition model
   #state variables:
-  x1=y[1]; x2=y[2];
+  x1=max(y[1],0); x2=max(y[2],0);
   # Parameters:
   r1=parms[1];
   r2=parms[2];

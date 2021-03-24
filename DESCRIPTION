@@ -1,6 +1,6 @@
 Package: SourCoex
 Title: Analyze Landis Et Al. Data of Sourdough Communities With a Range of Community Dynamics Models
-Version: 1.0.0.0
+Version: 1.0.0.1
 Authors@R: 
     person(given = "Collin",
            family = "Edwards",

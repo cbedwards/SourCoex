@@ -4,6 +4,7 @@
 #'
 #' @param specid Single character of the species to prep.
 #' @param data.use Data frame of data to use. Almost assuredly sour.data
+#' @param aug.ls() Augmentation list. Currently used for setting initial conditions for Tilman experiments
 #'
 #' @return Returns list with several components, suitable for analysis and plotting
 #' \itemize{
@@ -14,18 +15,23 @@
 
 #function to prep fitted landis data for within-species
 dataprep_landis.solo = function(specid,#specid should be a single value
-                                data.use=sour.data){
+                                data.use=sour.data,
+                                aug.ls=list()){
   if(length(specid)>1){stop("More than one species given. Probably you want a different function?")}
   dat = data.use %>%
     filter(abund=="abs", spec1 == specid, spec2 == specid, transf>0)
   dat=(dat[,c("rep","transf", "abund1")])
+  dat$abund1=dat$abund1/1000
   temp=split(dat, f = dat[,"rep"])
   dat.real.ls=lapply(temp,
                      function(x)(return(na.omit(as.matrix(x[,-1]))))
   )
 
   x0.mat=matrix(c(10),ncol=1, nrow=length(dat.real.ls)) #initial densities
+  x0.mat=x0.mat/1000 #scaling to per k.
+
   return(list(dat=dat,
               dat.real.ls=dat.real.ls,
               x0.mat=x0.mat))
 }
+
