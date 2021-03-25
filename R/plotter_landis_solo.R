@@ -9,7 +9,7 @@
 #' @param parmunits Vector of characters for the units of the parameters of the ode function. These are also generally saved in the ode function files, in the form of `units.LV`, `units.log`, etc).
 #' @param dat dataframe of the data from the experiments. Generated in the right format with `dataprep_landis.solo()`.
 #' @param specid vector of species names, for generating appropriate titles
-#' @param specmap.cur map of species id to species name. For the landis data in `sour.data`, the appropriate map is `spec.map`.
+#' @param specmap.cur map of species id to species name. For the landis data in `sourData`, the appropriate map is `specMap`.
 #' @param reso How many time points per hour should we generate to plot trajectories
 #'
 #' @return Returns a ggplot2 object: 2x2 grid of plots and parameter table. Actually a 3x2 grid with row for custom title object.
@@ -17,18 +17,18 @@
 #' @export
 
 #function to plot fitted landis data
-plotter_landis.solo=function(parms, # fitted parameters
+plotter_landis_solo=function(parms, # fitted parameters
                              ode_fun, # ode function
                              parmnames, #name of ode function parameters (e.g. parnames.lv)
                              parmunits, #units of ode function parms (e.g. units.LV
                              dat,
                              specid, # vector of species names, for mapping
                              aug.ls=list(), # for tilman etc
-                             specmap.cur=spec.map, # map of species id to species name
+                             specmap.cur=specMap, # map of species id to species name
                              reso=10, #plot points per hour.
                              noparms=FALSE #if true, don't plot the parms panel (useful for feeding into shiny)
 ){
-  specname=spec.map[spec.map$name.data==specid,2][[1]]
+  specname=specMap[specMap$name.data==specid,2][[1]]
   x0=10/1000
   if(!is.null(aug.ls$Til)){ #doing tilman model
     x0=c(x0,parms[length(parms)])

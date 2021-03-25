@@ -11,7 +11,7 @@
 #' @param dat.solo1 dataframe of the data from the single-species experiment for species 1. Generated in the right format with `dataprep_landis()`.
 #' @param dat.solo2 dataframe of the data from the single-species experiment for species 2. Generated in the right format with `dataprep_landis()`.
 #' @param specid vector of species names, for generating appropriate titles
-#' @param specmap.cur map of species id to species name. For the landis data in `sour.data`, the appropriate map is `spec.map`.
+#' @param specmap.cur map of species id to species name. For the landis data in `sourData`, the appropriate map is `specMap`.
 #' @param reso How many time points per hour should we generate to plot trajectories
 #'
 #' @return Returns a ggplot2 object: 2x2 grid of plots and parameter table. Actually a 3x2 grid with row for custom title object.
@@ -28,13 +28,13 @@ plotter_landis=function(parms, # fitted parameters
                          dat.solo2, #actual data from solo competition experiment, spec 2
                          specid, # vector of species names, for mapping
                          aug.ls=list(),
-                         specmap.cur=spec.map, # map of species id to species name
+                         specmap.cur=specMap, # map of species id to species name
                          reso=10 #plot points per hour.
 
 
 ){
-  name.spec1=spec.map[spec.map$name.data==specid[1],2][[1]]
-  name.spec2=spec.map[spec.map$name.data==specid[2],2][[1]]
+  name.spec1=specMap[specMap$name.data==specid[1],2][[1]]
+  name.spec2=specMap[specMap$name.data==specid[2],2][[1]]
   x0=c(5/1000,5/1000)
   if(!is.null(aug.ls$Til)){x0=c(x0, parms[length(parms)])}
   fit.pred=exper_pred(parms=parms,
@@ -50,7 +50,7 @@ plotter_landis=function(parms, # fitted parameters
     }
   names(dat.plot.joint)=c("time","spec1","spec2")
   x0=c(10/1000,0)
-  if(!is.null(aug.ls$Til)){x0=c(x0, parms[length(parms)])}
+  if(!is.null(aug.ls$Til)){x0=c(x0, parm[length(parms)])}
   fit.pred=exper_pred(parms=parms,
                       x0=x0,
                       ode_fun = ode_fun,

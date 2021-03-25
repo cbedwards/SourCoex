@@ -1,9 +1,9 @@
-#' Prep Landis et al. 2021 data (ie `sour.data`) for model-fitting
+#' Prep Landis et al. 2021 data (ie `sourData`) for model-fitting
 #'
 #' This function subsets the Landis data, and returns a matrix of appropriate initial conditions, as well as various formattings of the raw data for analysis and plotting. Plays well with `obj_helper()`, `plotter_landis()`.
 #'
 #' @param specid Vector of the first and second species for the analysis. Order matters.
-#' @param data.use data frame of data to use. Almost assuredly sour.data
+#' @param data.use data frame of data to use. Almost assuredly sourData
 #'
 #' @return Returns list with several components, suitable for analysis and plotting
 #' \itemize{
@@ -18,7 +18,7 @@
 
 #function to prep fitted landis data
 dataprep_landis = function(specid,
-                           data.use=sour.data){
+                           data.use=sourData){
   dat.comp = data.use %>%
     filter(abund=="abs", spec1 == specid[1], spec2 == specid[2],transf>0)
   dat.comp=(dat.comp[,c("rep","transf", "abund1", "abund2")])

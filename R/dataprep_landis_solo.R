@@ -1,9 +1,9 @@
-#' Prep Landis et al. 2021 data (ie `sour.data`) for model-fitting
+#' Prep Landis et al. 2021 data (ie `sourData`) for model-fitting
 #'
 #' This function subsets the Landis data for single-species model-fitting, and returns a matrix of appropriate initial conditions, as well as various formattings of the raw data for analysis and plotting. Plays well with `obj_helper()`, `plotter_landis.solo()`. Alternative to `dataprep_landis()` for fitting logistic growth, etc.
 #'
 #' @param specid Single character of the species to prep.
-#' @param data.use Data frame of data to use. Almost assuredly sour.data
+#' @param data.use Data frame of data to use. Almost assuredly sourData
 #' @param aug.ls() Augmentation list. Currently used for setting initial conditions for Tilman experiments
 #'
 #' @return Returns list with several components, suitable for analysis and plotting
@@ -15,8 +15,8 @@
 #' @export
 
 #function to prep fitted landis data for within-species
-dataprep_landis.solo = function(specid,#specid should be a single value
-                                data.use=sour.data,
+dataprep_landis_solo = function(specid,#specid should be a single value
+                                data.use=sourData,
                                 aug.ls=list()){
   if(length(specid)>1){stop("More than one species given. Probably you want a different function?")}
   dat = data.use %>%

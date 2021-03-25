@@ -5,7 +5,7 @@ filename <- here("inst/extdata","Figure_3_-_Source_Data_1.xlsx")
 # filename="Figure_3_-_Source_Data_1.xlsx"
 
 # read the two .csv files
-spec.map=read_excel(#this tab was added by me, modified from the Readme tab for easier formatting.
+specMap=read_excel(#this tab was added by me, modified from the Readme tab for easier formatting.
   filename,
   sheet="speciesMap"
 )
@@ -63,7 +63,7 @@ restruc_ = function(data, #data is the original data from Landis et al sheet.
   return(temp)
 }
 
-sour.data=rbind(restruc_(dat.xfer1RA, abund="rel", transf=1),
+sourData=rbind(restruc_(dat.xfer1RA, abund="rel", transf=1),
                 restruc_(dat.xfer3RA, abund="rel", transf=3),
                 restruc_(dat.xfer6RA, abund="rel", transf=6),
                 restruc_(dat.xfer1AA, abund="abs", transf=1),
@@ -73,19 +73,19 @@ sour.data=rbind(restruc_(dat.xfer1RA, abund="rel", transf=1),
 
 ## turn relative measures from percents to proportions (math is easier)
 
-sour.data[sour.data$abund=="rel",c("abund1","abund2")]=
-  sour.data[sour.data$abund=="rel",c("abund1","abund2")]/100
+sourData[sourData$abund=="rel",c("abund1","abund2")]=
+  sourData[sourData$abund=="rel",c("abund1","abund2")]/100
 
 ## transf1, relative
 ## First, be dumb, make it all interspec ratios
 
 transf0.rel=data.frame(abund="rel",
                        transf=0,
-                       sour.data[sour.data$transf==1 & sour.data$abund =="rel",
+                       sourData[sourData$transf==1 & sourData$abund =="rel",
                                  c("spec1","spec2", "rep")],
                        abund1=.5,
                        abund2=.5)
-transf0.rel=transf0.rel[,names(sour.data)]
+transf0.rel=transf0.rel[,names(sourData)]
 ## where spec1 = spec2, set abund1 = 1 and abund2 = 0
 transf0.rel[transf0.rel$spec1==transf0.rel$spec2, c("abund1")] = 1
 transf0.rel[transf0.rel$spec1==transf0.rel$spec2, c("abund2")] = 0
@@ -97,9 +97,9 @@ transf0.abs=transf0.rel
 transf0.abs$abund="abs"
 transf0.abs[,c("abund1", "abund2")]=transf0.abs[,c("abund1", "abund2")]*10
 
-sour.data=rbind(sour.data, transf0.rel, transf0.abs)
+sourData=rbind(sourData, transf0.rel, transf0.abs)
 
-sour.data$rep = as.factor(sour.data$rep)
+sourData$rep = as.factor(sourData$rep)
 
 # save the wine_data dataframe as an .rda file in WineReviews/data/
-usethis::use_data(sour.data, spec.map, overwrite = TRUE)
+usethis::use_data(sourData, specMap, overwrite = TRUE)
