@@ -1,0 +1,10 @@
+name: modelshiny
+title:
+username:
+account: edwards-evoeco
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3851646
+bundleId: 4393880
+url: https://edwards-evoeco.shinyapps.io/modelshiny/
+when: 1616683210.15695

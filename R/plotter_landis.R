@@ -30,6 +30,8 @@ plotter_landis=function(parms, # fitted parameters
                          aug.ls=list(),
                          specmap.cur=spec.map, # map of species id to species name
                          reso=10 #plot points per hour.
+
+
 ){
   name.spec1=spec.map[spec.map$name.data==specid[1],2][[1]]
   name.spec2=spec.map[spec.map$name.data==specid[2],2][[1]]

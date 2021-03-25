@@ -49,7 +49,7 @@ obj_ss = function(parms, #parameters for model implemented between transfers (fi
     cur.transf=dat.real[i.compare,1]
     err = (dat.real[i.compare,-1]+1) -
       (out$transf.pred[out$transf.pred[,1]==cur.transf,-1]+1)
-    err=err/10
+    err=err
     SS=SS+sum(err^2)
   }
   return(SS)

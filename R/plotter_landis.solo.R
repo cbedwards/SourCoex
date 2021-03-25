@@ -25,7 +25,8 @@ plotter_landis.solo=function(parms, # fitted parameters
                              specid, # vector of species names, for mapping
                              aug.ls=list(), # for tilman etc
                              specmap.cur=spec.map, # map of species id to species name
-                             reso=10 #plot points per hour.
+                             reso=10, #plot points per hour.
+                             noparms=FALSE #if true, don't plot the parms panel (useful for feeding into shiny)
 ){
   specname=spec.map[spec.map$name.data==specid,2][[1]]
   x0=10/1000
@@ -40,7 +41,11 @@ plotter_landis.solo=function(parms, # fitted parameters
                       reso=reso,
                       aug.ls=aug.ls)
   dat.plot=as.data.frame(fit.pred$series.tot)
-  names(dat.plot)=c("time","abund","R")
+  if(!is.null(aug.ls$Til)){ #doing tilman model
+    names(dat.plot)=c("time","abund","R")
+  }else{
+    names(dat.plot)=c("time","abund")
+  }
 
   dat.mean = dat %>%
     group_by(transf) %>%
@@ -83,8 +88,12 @@ plotter_landis.solo=function(parms, # fitted parameters
     rowhead=list(fg_params=list(col="navyblue", fontface=3L, cex=2)))
 
   gg.par = tableGrob(par.df, theme=tt.lv, rows=NULL)
-
-  return(plot_grid(title.gg, NULL,
-                   gg.plot, gg.par, nrow=2, rel_heights = c(.15, 2))
-  )
+  if(noparms==FALSE){
+    out=plot_grid(title.gg, NULL,
+                  gg.plot, gg.par, nrow=2, rel_heights = c(.15, 2))
+  }else{
+    out=plot_grid(title.gg,
+              gg.plot, nrow=2, rel_heights = c(.15, 2))
+  }
+    return(out)
 }
