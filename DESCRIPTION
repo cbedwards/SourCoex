@@ -20,7 +20,9 @@ Depends:
     tidyverse,
     cowplot,
     gridExtra,
-    here
+    here,
+    devtools,
+    readxl
 Suggests: 
     knitr,
     rmarkdown
