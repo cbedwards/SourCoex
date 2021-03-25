@@ -31,5 +31,5 @@ Note that I believe the amount of resources available at the start of a transfer
 \strong{IMPORTANT!!} For this model to work, need to pass \emph{aug.ls$Til = 2} to \code{exper_pred()} (e.g. through the chain of parent functions).
 \emph{aug.ls$TilR} is the amount of resources provided at the start of each transfer. If undefined, defaults to 195 (e.g. Landis et al. 2021 numbersw).
 
-Note that the names of the parameters is provided in \code{parmnames.Til}, and the units of the parameters is provided in \code{units.LV}. These are both used in plotting functions (to generate nice tables of parameters).
+Note that the names of the parameters is provided in \code{parmnamesTil}, and the units of the parameters is provided in \code{units.LV}. These are both used in plotting functions (to generate nice tables of parameters).
 }

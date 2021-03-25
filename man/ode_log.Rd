@@ -24,5 +24,5 @@ List of the derivate at current population density.
 ODE model for logistic growth. Note that is mostly an internal file: it gets used by \code{lsoda} in \code{exper_pred()}, and we don't have to interact with it directly.
 }
 \details{
-Note that the names of the parameters is provided in \code{parmnames.log}, and the units of the parameters is provided in \code{units.log}. These are both used in plotting functions (to generate nice tables of parameters).
+Note that the names of the parameters is provided in \code{parmnamesLog}, and the units of the parameters is provided in \code{unitsLog}. These are both used in plotting functions (to generate nice tables of parameters).
 }

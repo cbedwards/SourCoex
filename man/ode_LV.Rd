@@ -28,5 +28,5 @@ List of derivates at current population densities.
 ODE model for L-V competition. Note that is mostly an internal file: it gets used by \code{lsoda} in \code{exper_pred()}, and we don't have to interact with it directly.
 }
 \details{
-Note that the names of the parameters is provided in \code{parmnames.LV}, and the units of the parameters is provided in \code{units.LV}. These are both used in plotting functions (to generate nice tables of parameters).
+Note that the names of the parameters is provided in \code{parmnamesLV}, and the units of the parameters is provided in \code{unitsLV}. These are both used in plotting functions (to generate nice tables of parameters).
 }

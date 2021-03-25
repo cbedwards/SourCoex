@@ -14,7 +14,7 @@ plotter_landis(
   dat.solo2,
   specid,
   aug.ls = list(),
-  specmap.cur = spec.map,
+  specmap.cur = specMap,
   reso = 10
 )
 }
@@ -35,7 +35,7 @@ plotter_landis(
 
 \item{specid}{vector of species names, for generating appropriate titles}
 
-\item{specmap.cur}{map of species id to species name. For the landis data in \code{sour.data}, the appropriate map is \code{spec.map}.}
+\item{specmap.cur}{map of species id to species name. For the landis data in \code{sourData}, the appropriate map is \code{specMap}.}
 
 \item{reso}{How many time points per hour should we generate to plot trajectories}
 }

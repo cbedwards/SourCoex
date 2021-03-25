@@ -2,14 +2,14 @@
 % Please edit documentation in R/dataprep_landis.R
 \name{dataprep_landis}
 \alias{dataprep_landis}
-\title{Prep Landis et al. 2021 data (ie \code{sour.data}) for model-fitting}
+\title{Prep Landis et al. 2021 data (ie \code{sourData}) for model-fitting}
 \usage{
-dataprep_landis(specid, data.use = sour.data)
+dataprep_landis(specid, data.use = sourData)
 }
 \arguments{
 \item{specid}{Vector of the first and second species for the analysis. Order matters.}
 
-\item{data.use}{data frame of data to use. Almost assuredly sour.data}
+\item{data.use}{data frame of data to use. Almost assuredly sourData}
 }
 \value{
 Returns list with several components, suitable for analysis and plotting
