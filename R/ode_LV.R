@@ -2,7 +2,7 @@
 #'
 #' ODE model for L-V competition. Note that is mostly an internal file: it gets used by `lsoda` in `exper_pred()`, and we don't have to interact with it directly.
 #'
-#' Note that the names of the parameters is provided in `parmnames.LV`, and the units of the parameters is provided in `units.LV`. These are both used in plotting functions (to generate nice tables of parameters).
+#' Note that the names of the parameters is provided in `parmnamesLV`, and the units of the parameters is provided in `unitsLV`. These are both used in plotting functions (to generate nice tables of parameters).
 #'
 #'
 #' @param t time (only relevant for non-autonomous ODEs, not for us, but necessary for `deSolve` to play nice.
@@ -40,8 +40,8 @@ ode_LV=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
-parmnames.LV=c("r[1]", "r[2]", "alpha[12]","alpha[21]","k[1]","k[2]")
-units.LV=c("growth per capita per hour",
+parmnamesLV=c("r[1]", "r[2]", "alpha[12]","alpha[21]","k[1]","k[2]")
+unitsLV=c("growth per capita per hour",
            "growth per capita per hour",
            "unitless (multiplier)",
            "unitless (multiplier)",
@@ -49,7 +49,7 @@ units.LV=c("growth per capita per hour",
            "individuals"
 )
 
-usethis::use_data(parmnames.LV, units.LV, overwrite = TRUE)
+usethis::use_data(parmnamesLV, unitsLV, overwrite = TRUE)
 
 #' List of parameter names for the Lotka Voltera competition model
 #'
@@ -57,7 +57,7 @@ usethis::use_data(parmnames.LV, units.LV, overwrite = TRUE)
 #' @format A vector of 6 strings.
 
 #' @seealso `ode_LV`
-"parmnames.LV"
+"parmnamesLV"
 
 #' List of parameter units for the Lotka Voltera competition model
 #'
@@ -65,4 +65,4 @@ usethis::use_data(parmnames.LV, units.LV, overwrite = TRUE)
 #' @format A vector of 6 strings.
 
 #' @seealso `ode_LV`
-"units.LV"
+"unitsLV"

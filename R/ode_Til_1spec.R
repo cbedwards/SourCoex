@@ -7,7 +7,7 @@
 #' **IMPORTANT!!** For this model to work, need to pass *aug.ls$Til = 1* to `exper_pred()` (e.g. through the chain of parent functions).
 #' *aug.ls$TilR* is the amount of resources provided at the start of each transfer. If undefined, defaults to 195 (e.g. Landis et al. 2021 numbersw).
 #'
-#' Note that the names of the parameters is provided in `parmnames.Til.1spec`, and the units of the parameters is provided in `units.Til.1spec`. These are both used in plotting functions (to generate nice tables of parameters).
+#' Note that the names of the parameters is provided in `parmnamesTil1spec`, and the units of the parameters is provided in `unitsTil1spec`. These are both used in plotting functions (to generate nice tables of parameters).
 #'
 #'
 #' @param t time (only relevant for non-autonomous ODEs, not for us, but necessary for `deSolve` to play nice.
@@ -38,13 +38,13 @@ ode_Til_1spec=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
-parmnames.Til.1spec=c("r[1]", "d[1]", "R")
-units.Til.1spec=c("growth per capita per unit resource",
+parmnamesTil1spec=c("r[1]", "d[1]", "R")
+unitsTil1spec=c("growth per capita per unit resource",
            "per capita",
            "thousands of individuals"
 )
 
-usethis::use_data(parmnames.Til.1spec, units.Til.1spec, overwrite = TRUE)
+usethis::use_data(parmnamesTil1spec, unitsTil1spec, overwrite = TRUE)
 
 #' List of parameter names for the 1-species Tilman competition model
 #'
@@ -52,7 +52,7 @@ usethis::use_data(parmnames.Til.1spec, units.Til.1spec, overwrite = TRUE)
 #' @format A vector of 3 strings.
 
 #' @seealso `ode_Til_1spec`
-"parmnames.Til.1spec"
+"parmnamesTil1spec"
 
 #' List of parameter units for the 1-species Tilman model competition model
 #'
@@ -60,4 +60,4 @@ usethis::use_data(parmnames.Til.1spec, units.Til.1spec, overwrite = TRUE)
 #' @format A vector of 3 strings.
 
 #' @seealso `ode_Til_1spec`
-"units.Til.1spec"
+"unitsTil1spec"

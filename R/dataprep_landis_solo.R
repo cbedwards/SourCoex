@@ -1,6 +1,6 @@
 #' Prep Landis et al. 2021 data (ie `sourData`) for model-fitting
 #'
-#' This function subsets the Landis data for single-species model-fitting, and returns a matrix of appropriate initial conditions, as well as various formattings of the raw data for analysis and plotting. Plays well with `obj_helper()`, `plotter_landis.solo()`. Alternative to `dataprep_landis()` for fitting logistic growth, etc.
+#' This function subsets the Landis data for single-species model-fitting, and returns a matrix of appropriate initial conditions, as well as various formattings of the raw data for analysis and plotting. Plays well with `obj_helper()`, `plotter_landis_solo()`. Alternative to `dataprep_landis()` for fitting logistic growth, etc.
 #'
 #' @param specid Single character of the species to prep.
 #' @param data.use Data frame of data to use. Almost assuredly sourData

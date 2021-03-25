@@ -7,7 +7,7 @@
 #' **IMPORTANT!!** For this model to work, need to pass *aug.ls$Til = 2* to `exper_pred()` (e.g. through the chain of parent functions).
 #' *aug.ls$TilR* is the amount of resources provided at the start of each transfer. If undefined, defaults to 195 (e.g. Landis et al. 2021 numbersw).
 #'
-#' Note that the names of the parameters is provided in `parmnames.Til`, and the units of the parameters is provided in `units.LV`. These are both used in plotting functions (to generate nice tables of parameters).
+#' Note that the names of the parameters is provided in `parmnamesTil`, and the units of the parameters is provided in `units.LV`. These are both used in plotting functions (to generate nice tables of parameters).
 #'
 #'
 #' @param t time (only relevant for non-autonomous ODEs, not for us, but necessary for `deSolve` to play nice.
@@ -43,15 +43,15 @@ ode_Til=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
-parmnames.Til=c("r[1]", "r[2]", "d[1]","d[2]", "R")
-units.Til=c("growth per capita per unit resource",
+parmnamesTil=c("r[1]", "r[2]", "d[1]","d[2]", "R")
+unitsTil=c("growth per capita per unit resource",
            "growth per capita per unit resource",
            "per capita",
            "per capita",
            "resource units"
 )
 
-usethis::use_data(parmnames.Til, units.Til, overwrite = TRUE)
+usethis::use_data(parmnamesTil, unitsTil, overwrite = TRUE)
 
 #' List of parameter names for the Tilman competition (R*) model
 #'
@@ -59,7 +59,7 @@ usethis::use_data(parmnames.Til, units.Til, overwrite = TRUE)
 #' @format A vector of 4 strings.
 
 #' @seealso `ode_Til`
-"parmnames.Til"
+"parmnamesTil"
 
 #' List of parameter units for the Tilman competition (R*) model
 #'
@@ -67,4 +67,4 @@ usethis::use_data(parmnames.Til, units.Til, overwrite = TRUE)
 #' @format A vector of 4 strings.
 
 #' @seealso `ode_Til`
-"units.Til"
+"unitsTil"

@@ -2,7 +2,7 @@
 #'
 #' ODE model for logistic growth. Note that is mostly an internal file: it gets used by `lsoda` in `exper_pred()`, and we don't have to interact with it directly.
 #'
-#' Note that the names of the parameters is provided in `parmnames.log`, and the units of the parameters is provided in `units.log`. These are both used in plotting functions (to generate nice tables of parameters).
+#' Note that the names of the parameters is provided in `parmnamesLog`, and the units of the parameters is provided in `unitsLog`. These are both used in plotting functions (to generate nice tables of parameters).
 #'
 #'
 #' @param t time (only relevant for non-autonomous ODEs, not for us, but necessary for `deSolve` to play nice.
@@ -31,11 +31,11 @@ ode_log=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
-parmnames.log=c("r","k")
-units.log=c("growth per capita per hour",
+parmnamesLog=c("r","k")
+unitsLog=c("growth per capita per hour",
             "individuals"
 )
-usethis::use_data(parmnames.log, units.log, overwrite = TRUE)
+usethis::use_data(parmnamesLog, unitsLog, overwrite = TRUE)
 
 #' List of parameter names for the logistic growth model
 #'
@@ -43,7 +43,7 @@ usethis::use_data(parmnames.log, units.log, overwrite = TRUE)
 #' @format A vector of 2 strings.
 
 #' @seealso `ode_log`
-"parmnames.log"
+"parmnamesLog"
 
 #' List of parameter units for the logistic growth model
 #'
@@ -51,4 +51,4 @@ usethis::use_data(parmnames.log, units.log, overwrite = TRUE)
 #' @format A vector of 2 strings.
 
 #' @seealso `ode_log`
-"units.log"
+"unitsLog"
