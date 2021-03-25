@@ -1,6 +1,6 @@
 Package: SourCoex
 Title: Analyze Landis Et Al. Data of Sourdough Communities With a Range of Community Dynamics Models
-Version: 1.0.0.1
+Version: 1.0.0.2
 Authors@R: 
     person(given = "Collin",
            family = "Edwards",
@@ -15,11 +15,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 StagedInstall: no 
 Depends: 
-    R (>= 2.10),
+    R (>= 3.5.0),
     deSolve,
     tidyverse,
     cowplot,
-    gridExtra
+    gridExtra,
+    here
 Suggests: 
     knitr,
     rmarkdown
