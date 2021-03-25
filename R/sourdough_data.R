@@ -1,9 +1,8 @@
-## but I'm not sure how it knows about the package otherwise.
-## leaving it in for now.
 
 ## code to prepare `wine_data` dataset goes here
 # retrieve paths to datafiles
 filename <- here("inst/extdata","Figure_3_-_Source_Data_1.xlsx")
+# filename="Figure_3_-_Source_Data_1.xlsx"
 
 # read the two .csv files
 spec.map=read_excel(#this tab was added by me, modified from the Readme tab for easier formatting.
