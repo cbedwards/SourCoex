@@ -23,6 +23,7 @@
 #' }
 #' @source \url{https://elifesciences.org/articles/61644}
 #' @seealso spec.map
+#' @export
 "sour.data"
 
 
