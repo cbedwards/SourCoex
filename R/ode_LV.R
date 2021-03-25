@@ -40,7 +40,11 @@ ode_LV=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
+
+
+#' @export
 parmnamesLV=c("r[1]", "r[2]", "alpha[12]","alpha[21]","k[1]","k[2]")
+#' @export
 unitsLV=c("growth per capita per hour",
            "growth per capita per hour",
            "unitless (multiplier)",

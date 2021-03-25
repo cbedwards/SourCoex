@@ -31,7 +31,11 @@ ode_log=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
+
+
+#' @export
 parmnamesLog=c("r","k")
+#' @export
 unitsLog=c("growth per capita per hour",
             "individuals"
 )

@@ -43,7 +43,9 @@ ode_Til=function(t,y,parms) {
 }
 # for an ode function: make vector of parameter names in order
 # and make vector of units in order, using plotmath notation.
+#' @export
 parmnamesTil=c("r[1]", "r[2]", "d[1]","d[2]", "R")
+#' @export
 unitsTil=c("growth per capita per unit resource",
            "growth per capita per unit resource",
            "per capita",

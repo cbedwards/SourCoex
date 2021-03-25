@@ -38,4 +38,5 @@
 #' }
 #' @source \url{https://elifesciences.org/articles/61644}
 #' @seealso sourData
+#' @export
 "specMap"
