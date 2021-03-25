@@ -22,7 +22,8 @@ Depends:
     gridExtra,
     here,
     devtools,
-    readxl
+    readxl,
+    usethis
 Suggests: 
     knitr,
     rmarkdown
