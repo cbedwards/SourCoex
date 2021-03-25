@@ -13,7 +13,8 @@ plotter_landis.solo(
   specid,
   aug.ls = list(),
   specmap.cur = spec.map,
-  reso = 10
+  reso = 10,
+  noparms = FALSE
 )
 }
 \arguments{

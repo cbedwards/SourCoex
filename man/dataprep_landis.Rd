@@ -20,6 +20,7 @@ Returns list with several components, suitable for analysis and plotting
 \item dat.real.ls - combination of dat.comp, dat.solo1, dat.solo2. Used to evaluate model fit with \code{obj_helper()}.
 \item x0.mat - matrix of initial conditions, with each row corresponding to one experiment. Same order as dat.real.ls, also used in \code{obj_helper()}.
 }
+}
 \description{
 This function subsets the Landis data, and returns a matrix of appropriate initial conditions, as well as various formattings of the raw data for analysis and plotting. Plays well with \code{obj_helper()}, \code{plotter_landis()}.
 }

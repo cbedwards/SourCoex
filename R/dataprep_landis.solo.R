@@ -11,6 +11,7 @@
 #'   \item dat - dataframe of the data for this species, for plotting.
 #'   \item dat.real.ls - list form of the data for this species, used to evaluate model fit with `obj_helper()`.
 #'   \item x0.mat - matrix of initial conditions, with each row corresponding to one experiment. Same order as dat.real.ls, also used in `obj_helper()`.
+#'  }
 #' @export
 
 #function to prep fitted landis data for within-species
