@@ -1,5 +1,9 @@
 library(shiny)
+# library(devtools)
+# install_github("cbedwards/SourCoex",
+               # auth_token="133a2ab1fa7cf7a6d1d4e547e9204b27fa66c13d")
 library(SourCoex)
+
 #### Functions For Now: Definitely easier when my package is available to servers.
 
 
@@ -20,7 +24,7 @@ ui <- fluidPage(
       selectInput(
         inputId = "specid",
         label = "Species (to compare data to our curves)",
-        choices = spec.map$name.full
+        choices = specMap$name.full
 
       ),
       selectInput(
@@ -38,14 +42,14 @@ ui <- fluidPage(
                     min = 0,
                     max = 2,
                     step=.01,
-                    value = .05),
+                    value = .2),
 
         # Input: Slider for the number of bins ----
         sliderInput(inputId = "k",
                     label = "k (carrying capacity in thousands of CFUs)",
                     min = 0,
                     max = 500,
-                    value = 10)
+                    value = 100)
       ),
 
       ## Tilman 1-species parameters
@@ -55,30 +59,47 @@ ui <- fluidPage(
         sliderInput(inputId = "tilr",
                     label = "r (growth conversion factor)",
                     min = 0,
-                    max = 2,
-                    step=.001,
+                    max = 1,
+                    step=.0001,
                     value = .05),
 
         # Input: Slider for the number of bins ----
         sliderInput(inputId = "d",
                     label = "d (per capita growth rate)",
                     min = 0,
-                    max = 1,
+                    max = .5,
                     value = 0.01,
-                    step=.001),
+                    step=.0001),
         sliderInput(inputId = "R",
-                    label = "R (resource units per transfer)",
+                    label = "R_0 (initial resource units per transfer)",
                     min = 1,
                     max = 200,
                     value = 10)
       ),
+      # App description
+      includeMarkdown("model-context.md"),
     ),
 
     # Main panel for displaying outputs ----
     mainPanel(
 
-      # Output: Histogram ----
-      plotOutput(outputId = "trajecplot")
+      # Output: grah ----
+      plotOutput(outputId = "trajecplot"),
+
+      #Function descriptions
+      conditionalPanel(
+      condition = "input.modname=='Logistic Growth'",
+      withMathJax(includeMarkdown("logistic.md"))
+      ),
+      conditionalPanel(
+        condition = "input.modname=='One-Species Tilman'",
+        withMathJax(includeMarkdown("tilman1.md"))
+      )
+
+      #text context
+
+
+
 
     )
   )
@@ -98,25 +119,25 @@ server <- function(input, output) {
   # 2. Its output type is a plot
   output$trajecplot <- renderPlot({
     #grab data of appropriate species
-    specid=spec.map$name.data[spec.map$name.full==input$specid]
-    dat.prepped=dataprep_landis.solo(specid)
+    specid=specMap$name.data[specMap$name.full==input$specid]
+    dat.prepped=dataprep_landis_solo(specid)
     ## parameters etc for logistic, if appropriate
     if(input$modname=="Logistic Growth"){
       ode_cur=ode_log
       parms.cur=c(input$r, input$k)
       aug.ls=list()
-      parmnames.cur=parmnames.log
-      units.cur=units.log
+      parmnames.cur=parmnamesLog
+      units.cur=unitsLog
     }
     ## parameters etc for 1-species Tilman, if appropriate
     if(input$modname=="One-Species Tilman"){
       ode_cur=ode_Til_1spec
       parms.cur=c(input$tilr, input$d, input$R)
       aug.ls=list(Til=1)
-      parmnames.cur=parmnames.Til.1spec
-      units.cur=units.Til.1spec
+      parmnames.cur=parmnamesTil1spec
+      units.cur=unitsTil1spec
     }
-    modfit=plotter_landis.solo(parms=parms.cur,
+    modfit=plotter_landis_solo(parms=parms.cur,
                                ode_fun=ode_cur,
                                parmnames = parmnames.cur,
                                parmunits = units.cur,
