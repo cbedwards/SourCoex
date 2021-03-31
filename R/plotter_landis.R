@@ -50,7 +50,7 @@ plotter_landis=function(parms, # fitted parameters
     }
   names(dat.plot.joint)=c("time","spec1","spec2")
   x0=c(10/1000,0)
-  if(!is.null(aug.ls$Til)){x0=c(x0, parm[length(parms)])}
+  if(!is.null(aug.ls$Til)){x0=c(x0, parms[length(parms)])}
   fit.pred=exper_pred(parms=parms,
                       x0=x0,
                       ode_fun = ode_fun,
@@ -109,7 +109,7 @@ plotter_landis=function(parms, # fitted parameters
                col='blue', alpha=.5, size=4, shape=17)+
     # plotting details
     xlab("time (hrs)")+
-    ylab("CFUs")+
+    ylab("Thousands of CFUs")+
     ggtitle("Both species")
   gg.spec1 = ggplot(data=dat.plot.1) +
     #fitted curve
@@ -120,7 +120,7 @@ plotter_landis=function(parms, # fitted parameters
     geom_point(data=dat.solo1.mean, aes(x=transf*48, y = abund1),
                col="black", alpha=.5, size=4, shape=17)+
     xlab("time (hrs)")+
-    ylab("CFUs")+
+    ylab("Thousands of CFUs")+
     ggtitle(paste0(name.spec1," only"))
   gg.spec2 = ggplot(data=dat.plot.2) +
     # fitted curve
@@ -131,7 +131,7 @@ plotter_landis=function(parms, # fitted parameters
     geom_point(data=dat.solo2.mean, aes(x=transf*48, y = abund1),
                col='blue', alpha=.5, size=4, shape=17)+
     xlab("time (hrs)")+
-    ylab("CFUs")+
+    ylab("Thousands of CFUs")+
     ggtitle(paste0(name.spec2," only"))
 
 

@@ -51,10 +51,10 @@ plot(out$series.tot)
 
 
 
-prepped.solo=dataprep_landis.solo("1",aug.ls=list(Til=1))
+prepped.solo=dataprep_landis_solo("1",aug.ls=list(Til=1))
 
 ## test on logistic
-obj_helper(parms=c(.2, 1000, 195),
+SourTest_SS(parms=c(.2, 1000, 195),
            x0.mat=prepped.solo$x0.mat,
            ode_fun = ode_Til_1spec,
            transf.num=6,
@@ -77,9 +77,9 @@ parms.guess=c(r=.05, d=.01, R=50)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="1"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -114,7 +114,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -122,6 +122,16 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
+
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -132,9 +142,9 @@ parms.guess=c(r=.005, d=.05, R=30)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="2"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -169,7 +179,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -177,6 +187,15 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
+
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -186,9 +205,9 @@ parms.guess=c(r=.01, d=.05, R=15)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="3"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -223,7 +242,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -231,6 +250,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -240,9 +267,9 @@ parms.guess=c(r=.005, d=.05, R=28)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="4"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -277,7 +304,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -285,6 +312,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -294,9 +329,9 @@ parms.guess=c(r=.02, d=.05, R=30)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="A"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -331,7 +366,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -339,6 +374,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -348,9 +391,9 @@ parms.guess=c(r=.0008, d=.02, R=600)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="B"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -385,7 +428,7 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -393,6 +436,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -402,9 +453,9 @@ parms.guess=c(r=.00045, d=.05, R=600)
 parm.lower=c(r1=0, d1=0.00001, R = 1)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="C"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -422,9 +473,9 @@ fit1=optim(par=parms.guess,
            dat.real.ls=dat.prepped$dat.real.ls,
            aug.ls=list(Til=1),
            ##Methods stuff
-           method="L-BFGS-B",
-           upper=parm.upper,
-           lower=parm.lower
+           # method="L-BFGS-B",
+           # upper=parm.upper,
+           # lower=parm.lower
 )
 fit2=optim(par=fit1$par,
            fn=obj_helper,
@@ -435,11 +486,11 @@ fit2=optim(par=fit1$par,
            dat.real.ls=dat.prepped$dat.real.ls,
            aug.ls=list(Til=1),
            ##Methods stuff
-           method="L-BFGS-B",
-           upper=parm.upper,
-           lower=parm.lower
+           # method="L-BFGS-B",
+           # upper=parm.upper,
+           # lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -447,6 +498,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -456,9 +515,9 @@ parms.guess=c(r=.008, d=.0002, R=100)
 parm.lower=c(r1=0, d1=0.00001, R = .0001)
 parm.upper=c(r1=100, d1=100, R = 10^10)
 specid="D"
-dat.prepped=dataprep_landis.solo(specid, aug.ls=list(Til=1))
+dat.prepped=dataprep_landis_solo(specid, aug.ls=list(Til=1))
 ##quickcheck: is our guess reasonable?
-modfit=plotter_landis.solo(parms=parms.guess,
+modfit=plotter_landis_solo(parms=parms.guess,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -480,6 +539,7 @@ fit1=optim(par=parms.guess,
            upper=parm.upper,
            lower=parm.lower
 )
+fit1
 fit2=optim(par=fit1$par,
            fn=obj_helper,
            ## ad'l args
@@ -493,7 +553,8 @@ fit2=optim(par=fit1$par,
            upper=parm.upper,
            lower=parm.lower
 )
-modfit=plotter_landis.solo(parms=fit2$par,
+fit2
+modfit=plotter_landis_solo(parms=fit2$par,
                            ode_fun=ode_Til_1spec,
                            parmnames = parmnames.Til.1spec,
                            parmunits = units.Til.1spec,
@@ -501,6 +562,14 @@ modfit=plotter_landis.solo(parms=fit2$par,
                            specid=specid,
                            aug.ls=list(Til=1))
 modfit
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_Til_1spec,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=1)
+)
 ggsave(here("sandbox/figs",paste0("Til-spec-",specid,".jpg")),
        modfit,
        width=18, height=9)
@@ -564,9 +633,15 @@ fit2=optim(par=fit1$par,
 )
 fit2
 
-
-
-
+## Quick diagnostics
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_fun,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                aug.ls=list(Til=2)
+)
 
 mod.fit = plotter_landis(parms=fit2$par,
                          ode_fun=ode_fun,
@@ -607,7 +682,13 @@ plotter_landis(parms=parms.guess,
                specid = specid,
                specmap.cur = spec.map,
                aug.ls=list(Til=2))
-
+obj_helper(parms=parms.guess,
+           ode_fun=ode_fun,
+           dat.solo1 = dat.prepped$dat.solo1,
+           dat.solo2 = dat.prepped$dat.solo2,
+           specid = specid,
+           specmap.cur = spec.map,
+           aug.ls=list(Til=2))
 fit1=optim(par=parms.guess,
            fn=obj_helper,
            ## ad'l args

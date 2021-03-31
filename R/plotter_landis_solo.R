@@ -61,7 +61,7 @@ plotter_landis_solo=function(parms, # fitted parameters
                col="black", alpha=.5, size=4, shape=17)+
     # plotting details
     xlab("time (hrs)")+
-    ylab("CFUs")+
+    ylab("Thousands of CFUs")+
     ggtitle("")
   require(cowplot)
   require(gridExtra)
