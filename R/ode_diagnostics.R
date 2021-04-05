@@ -18,12 +18,14 @@ ode_diagnostics = function(fit1,
                            ode_fun,
                            transf.num=6,
                            dat.real.ls,
+                           scale.vec,
                            aug.ls=list()){
   guess.SS = obj_helper(parms=parms.guess,
                         x0.mat=x0.mat,
                         ode_fun = ode_fun,
                         transf.num=6,
                         dat.real.ls = dat.real.ls,
+                        scale.vec,
                         aug.ls=aug.ls)
   cat("Parameter changes:\n")
   print(rbind(parms.guess=parms.guess,

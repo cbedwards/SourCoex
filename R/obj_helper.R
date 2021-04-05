@@ -14,6 +14,7 @@
 #' @param transf.num How many transfers to model (1 is basically no dealing with transfers). With Landis data, this will generally be 6.
 #' @param dat.real.ls Empirical data to fit, in the form of a list. Each entry is a *matrix*, with columns of replicate number ('rep'), transfer number ('transf'), and abundance for each species ('abund1', 'abund2', etc)>
 #' `dataprep_landis()` preps the Landis data for this, and serves as an example.
+#' @param scale.vec atomic or vector with scaling factor for errors. Generally this should be the abundance of each species in the 1-species trials. If atomic, doesn't have meaningful effect.
 #' @param transf.dur How many hours are each transfer period? Default is 48 (e.g. Landis data).
 #' @param transf.dil At the beginning of each transfer period, what is the fraction of innoculant in the total material. Default is 5/200 (from Landis: 5 microliters innoculant into 195 new flour goo).
 #' @param aug.ls Augmentation list. Not currently used, but a way to pass information down the chain of functions.
@@ -32,6 +33,7 @@ obj_helper=function(parms, #parameters for model implemented between transfers (
                     dat.real.ls, #actual data, list of entries, each entry is a *matrix*
                     #with 1st column being transfer number, second being abund species 1, etc.
                     #should not include initial transfer unless we're fitting initial conditions as parameters
+                    scale.vec=1, #atomic or vector of scaling factors for error associated with each species.
                     transf.dur=48, #how long are transfers? in hours
                     transf.dil = 5/200, #what is the dilution of each transfer. In Landis it's 5 microliter into 195 of new material, so 5/200
                     aug.ls=list() #misc list for anything extra, if needed
@@ -45,11 +47,12 @@ obj_helper=function(parms, #parameters for model implemented between transfers (
     }
     dat.real=dat.real.ls[[i.rep]]
     if(sum(is.na(dat.real)) != 0){stop(paste0("NA in `dat.real.ls` entry number ", i.rep,". Check to make sure nothing weird is happing, remove transfer numbers with NAs."))}
-    ss.cur=obj_ss(parms=parms,
+    ss.cur=obj_cv(parms=parms,
                   x0=x0,
                   ode_fun = ode_fun,
                   transf.num=transf.num,
                   dat.real=dat.real,
+                  scale.vec,
                   transf.dur=transf.dur,
                   transf.dil=transf.dil,
                   aug.ls=aug.ls)

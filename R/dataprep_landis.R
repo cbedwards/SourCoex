@@ -47,6 +47,7 @@ dataprep_landis = function(specid,
   ## This experiment wasn't designed for a single pairing, so data was formatted such that abund1 is
   ## ## the abundance of the first species *in that competition*. So solos are ALWAYS in the abund1 slot.
   dat.solo2=(dat.solo2[,c("rep","transf", "abund2", "abund1")])
+  names(dat.solo2)=c("rep","transf", "abund1", "abund2")
   dat.solo2$abund1=dat.solo2$abund1/1000
   dat.solo2$abund2=dat.solo2$abund2/1000
   temp=split(dat.solo2, f = dat.solo2[,"rep"])

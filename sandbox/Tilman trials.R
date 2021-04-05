@@ -592,6 +592,8 @@ parms.guess=c(r1=.0025,r2=.002,d1=.0001, d2=.01, R = 50)
 ode_fun=ode_Til
 specid=c("1","2")
 dat.prepped=dataprep_landis(specid)
+scale.vec=c(mean(dat.prepped$dat.solo1$abund1, na.rm=T),
+            mean(dat.prepped$dat.solo2$abund2, na.rm=T))
 
 plotter_landis(parms=parms.guess,
                ode_fun=ode_fun,
@@ -611,6 +613,7 @@ fit1=optim(par=parms.guess,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -625,6 +628,7 @@ fit2=optim(par=fit1$par,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -671,6 +675,9 @@ parms.guess=c(r1=.0025,r2=.002,d1=.0001, d2=.01, R = 50)
 ode_fun=ode_Til
 specid=c("1","3")
 dat.prepped=dataprep_landis(specid)
+scale.vec=c(mean(dat.prepped$dat.solo1$abund1, na.rm=T),
+            mean(dat.prepped$dat.solo2$abund2, na.rm=T))
+
 
 plotter_landis(parms=parms.guess,
                ode_fun=ode_fun,
@@ -682,13 +689,6 @@ plotter_landis(parms=parms.guess,
                specid = specid,
                specmap.cur = spec.map,
                aug.ls=list(Til=2))
-obj_helper(parms=parms.guess,
-           ode_fun=ode_fun,
-           dat.solo1 = dat.prepped$dat.solo1,
-           dat.solo2 = dat.prepped$dat.solo2,
-           specid = specid,
-           specmap.cur = spec.map,
-           aug.ls=list(Til=2))
 fit1=optim(par=parms.guess,
            fn=obj_helper,
            ## ad'l args
@@ -696,6 +696,7 @@ fit1=optim(par=parms.guess,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -710,6 +711,7 @@ fit2=optim(par=fit1$par,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -717,10 +719,6 @@ fit2=optim(par=fit1$par,
            lower=parm.lower
 )
 fit2
-
-
-
-
 
 mod.fit = plotter_landis(parms=fit2$par,
                          ode_fun=ode_fun,
@@ -733,6 +731,17 @@ mod.fit = plotter_landis(parms=fit2$par,
                          specmap.cur = spec.map,
                          aug.ls=list(Til=2))
 mod.fit
+## Quick diagnostics
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_fun,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                scale.vec=scale.vec,
+                aug.ls=list(Til=2)
+)
+
 ggsave(here("sandbox/figs",paste0("Til-specs-",paste0(specid, collapse="-"),".jpg")),
        mod.fit,
        width=18, height=13)
@@ -750,10 +759,15 @@ convergence.til.ls[[length(convergence.til.ls)+1]] = list(specid = specid,
 parm.lower=c(r1=0, r2=0, d1 = 0, d2=0, R=0.01)
 parm.upper=c(r1=5, r2=5, d1 = 5, d2=5, R=10^10)
 ## Hard to guess what is a good starting point
-parms.guess=c(r1=.0025,r2=.002,d1=.0001, d2=.01, R = 50)
+parms.guess=c(r1=.025,r2=.02,d1=.01, d2=.11, R = 50)
 ode_fun=ode_Til
 specid=c("1","4")
 dat.prepped=dataprep_landis(specid)
+
+scale.vec=c(mean(dat.prepped$dat.solo1$abund1, na.rm=T),
+            mean(dat.prepped$dat.solo2$abund2, na.rm=T))
+
+
 
 plotter_landis(parms=parms.guess,
                ode_fun=ode_fun,
@@ -773,6 +787,7 @@ fit1=optim(par=parms.guess,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -787,6 +802,7 @@ fit2=optim(par=fit1$par,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -794,6 +810,16 @@ fit2=optim(par=fit1$par,
            lower=parm.lower
 )
 fit2
+
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_fun,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                scale.vec=scale.vec,
+                aug.ls=list(Til=2)
+)
 
 
 
@@ -825,11 +851,12 @@ convergence.til.ls[[length(convergence.til.ls)+1]] = list(specid = specid,
 parm.lower=c(r1=0, r2=0, d1 = 0, d2=0, R=0.01)
 parm.upper=c(r1=5, r2=5, d1 = 5, d2=5, R=10^10)
 ## Hard to guess what is a good starting point
-parms.guess=c(r1=.0025,r2=.002,d1=.015, d2=.001, R = 45)
+parms.guess=c(r1=.04,r2=.03,d1=.001, d2=.001, R = 10)
 ode_fun=ode_Til
 specid=c("2","3")
 dat.prepped=dataprep_landis(specid)
-
+scale.vec=c(mean(dat.prepped$dat.solo1$abund1, na.rm=T),
+            mean(dat.prepped$dat.solo2$abund2, na.rm=T))
 plotter_landis(parms=parms.guess,
                ode_fun=ode_fun,
                parmnames = parmnames.Til,
@@ -840,6 +867,13 @@ plotter_landis(parms=parms.guess,
                specid = specid,
                specmap.cur = spec.map,
                aug.ls=list(Til=2))
+obj_helper(parms = parms.guess,
+           x0.mat=dat.prepped$x0.mat,
+           ode_fun=ode_fun,
+           transf.num=6,
+           dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
+           aug.ls=list(Til=2))
 
 fit1=optim(par=parms.guess,
            fn=obj_helper,
@@ -848,6 +882,7 @@ fit1=optim(par=parms.guess,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -862,6 +897,7 @@ fit2=optim(par=fit1$par,
            transf.num=6,
            ode_fun=ode_fun,
            dat.real.ls=dat.prepped$dat.real.ls,
+           scale.vec=scale.vec,
            aug.ls=list(Til=2),
            ##Methods stuff
            method="L-BFGS-B",
@@ -885,6 +921,27 @@ mod.fit = plotter_landis(parms=fit2$par,
                          specmap.cur = spec.map,
                          aug.ls=list(Til=2))
 mod.fit
+## Quick diagnostics
+ode_diagnostics(fit1,fit2,
+                parms.guess=parms.guess,
+                x0.mat=dat.prepped$x0.mat,
+                ode_fun=ode_fun,
+                transf.num=6,
+                dat.real.ls=dat.prepped$dat.real.ls,
+                scale.vec=scale.vec,
+                aug.ls=list(Til=2)
+)
+## This looks bad
+##
+SourTest_SS(parms.0=fit2$par,
+x0.mat=dat.prepped$x0.mat,
+ode_fun=ode_fun,
+transf.num=6,
+dat.real.ls=dat.prepped$dat.real.ls,
+aug.ls=list(Til=2)
+)
+
+
 ggsave(here("sandbox/figs",paste0("Til-specs-",paste0(specid, collapse="-"),".jpg")),
        mod.fit,
        width=18, height=13)

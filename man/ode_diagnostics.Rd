@@ -12,6 +12,7 @@ ode_diagnostics(
   ode_fun,
   transf.num = 6,
   dat.real.ls,
+  scale.vec,
   aug.ls = list()
 )
 }

@@ -127,8 +127,8 @@ plotter_landis=function(parms, # fitted parameters
     geom_path(aes(x=time, y=spec1), linetype="dashed")+
     geom_path(aes(x=time, y=spec2), col="blue", linetype="dashed")+
     # actual data
-    geom_point(data=dat.solo2, aes(x=transf*48, y = abund1), col='blue')+
-    geom_point(data=dat.solo2.mean, aes(x=transf*48, y = abund1),
+    geom_point(data=dat.solo2, aes(x=transf*48, y = abund2), col='blue')+
+    geom_point(data=dat.solo2.mean, aes(x=transf*48, y = abund2),
                col='blue', alpha=.5, size=4, shape=17)+
     xlab("time (hrs)")+
     ylab("Thousands of CFUs")+

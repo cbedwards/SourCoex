@@ -10,6 +10,7 @@ obj_helper(
   ode_fun,
   transf.num,
   dat.real.ls,
+  scale.vec = 1,
   transf.dur = 48,
   transf.dil = 5/200,
   aug.ls = list()
@@ -26,6 +27,8 @@ obj_helper(
 
 \item{dat.real.ls}{Empirical data to fit, in the form of a list. Each entry is a \emph{matrix}, with columns of replicate number ('rep'), transfer number ('transf'), and abundance for each species ('abund1', 'abund2', etc)>
 \code{dataprep_landis()} preps the Landis data for this, and serves as an example.}
+
+\item{scale.vec}{atomic or vector with scaling factor for errors. Generally this should be the abundance of each species in the 1-species trials. If atomic, doesn't have meaningful effect.}
 
 \item{transf.dur}{How many hours are each transfer period? Default is 48 (e.g. Landis data).}
 
