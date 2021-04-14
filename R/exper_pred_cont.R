@@ -26,7 +26,7 @@ exper_pred_cont = function(parms, #parameters for model implemented between tran
                            reso = 10,  #resolution time points to plot per hour
                            return.all = TRUE # if TRUE, return list of both the reso-based timeseries and the time based timeseries
 ){
-  times.plot=seq(1, max(times), by= 1/reso)
+  times.plot=seq(0, max(times), by= 1/reso)
   if(!is.null(aug.ls$Til)){# carve off final parm for resources
     TilR = parms[length(parms)]
     parms=parms[-length(parms)]

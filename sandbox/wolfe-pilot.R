@@ -49,9 +49,54 @@ ggsave(here("sandbox/figs/wolfe-pilot","rawdata-log.jpg"),
 
 #### Quick and dirty model fitting
 
+dat.prep = dataprep_wolfe(specid=dat$spec[1],
+                          data.use=dat)
+
+#test experiment function
 exper_pred_cont(parms=c(r=1.5, k=600000),
                 x0=180000,
                 ode_fun=ode_log,
                 times=unique(dat$time),
-                )
+)
+
+#test objective functions
+obj_helper_cont(parms = c(r=1.5, k=600000),
+                x0.mat = dat.prep$x0.mat,
+                ode_fun = ode_log,
+                dat.real.ls = dat.prep$dat.real.ls,
+                times = dat.prep$times,
+                scale.vec = 1,
+                aug.ls = list())
+#test curve-fitting
+parms.guess=c(r=.01, k=1000)
+out=optim(par = parms.guess,
+          fn = obj_helper_cont,
+          x0.mat = dat.prep$x0.mat,
+          ode_fun = ode_log,
+          dat.real.ls = dat.prep$dat.real.ls,
+          times=dat.prep$times,
+          scale.vec=1,
+          aug.ls=list())
+out2 = optim(par = out$par,
+             fn = obj_helper_cont,
+             x0.mat = dat.prep$x0.mat,
+             ode_fun = ode_log,
+             dat.real.ls = dat.prep$dat.real.ls,
+             times=dat.prep$times,
+             scale.vec=1,
+             aug.ls=list())
+out2
+temp = exper_pred_cont(parms=out$par,
+                       x0=mean(dat.prep$x0.mat),
+                       ode_fun=ode_log,
+                       times=unique(dat.prep$times),
+)
+
+
+traj.plot=data.frame(temp$series.tot)
+names(traj.plot)=c("time", "abund")
+ggplot(data=traj.plot, aes(x=time, y = abund))+
+  geom_path()+
+  geom_point(data = dat.prep$dat.comp,
+             aes(x=time, y = abund1))
 
