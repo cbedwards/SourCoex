@@ -27,6 +27,7 @@ obj_cv = function(parms, #parameters for model implemented between transfers (fi
                   #with 1st column being transfer number, second being abund species 1, etc.
                   #should not include initial transfer unless we're fitting initial conditions as parameters
                   scale.vec, # atomic or vector of mean population size within the single-species trials, for use to handle scaling issues.
+                  times=NULL, #vector of times to predict at
                   transf.dur=48, #how long are transfers? in hours
                   transf.dil = 5/200, #what is the dilution of each transfer. In Landis it's 5 microliter into 195 of new material, so 5/200
                   aug.ls=list()
@@ -40,6 +41,7 @@ obj_cv = function(parms, #parameters for model implemented between transfers (fi
                  transf.dur=transf.dur,
                  transf.dil=transf.dil,
                  aug.ls = aug.ls,
+                 times=times,
                  reso=reso,
                  return.all=return.all)
   ## account for Tilman: if modeling tilman r* model, remove resource column from comparison(!!)

@@ -35,6 +35,7 @@ obj_helper=function(parms, #parameters for model implemented between transfers (
                     #should not include initial transfer unless we're fitting initial conditions as parameters
                     scale.vec=1, #atomic or vector of scaling factors for error associated with each species.
                     transf.dur=48, #how long are transfers? in hours
+                    times=NULL, #vector of times to predict at
                     transf.dil = 5/200, #what is the dilution of each transfer. In Landis it's 5 microliter into 195 of new material, so 5/200
                     aug.ls=list() #misc list for anything extra, if needed
 ){
@@ -54,6 +55,7 @@ obj_helper=function(parms, #parameters for model implemented between transfers (
                   dat.real=dat.real,
                   scale.vec,
                   transf.dur=transf.dur,
+                  times=times,
                   transf.dil=transf.dil,
                   aug.ls=aug.ls)
     # print(ss.cur)
